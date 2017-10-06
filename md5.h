@@ -7,4 +7,3 @@
 #include <stdint.h>
 
 void crack_ispc(uint8_t initial_msg[4], int len);
-void crack_serial(uint8_t initial_msg[4], int len);

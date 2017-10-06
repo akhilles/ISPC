@@ -74,10 +74,8 @@ void md5(uint8_t initial_msg[8], int initial_len, unsigned int *h0, unsigned int
 	unsigned int w[16];
 	memset(w, 0, 64);
 
-	cout << (int)initial_msg[0] << " " << (int)initial_msg[1] << " " << (int)initial_msg[2] << endl;
-
 	if (initial_len == 2) {
-		a = 0x800000 | (initial_msg[1] << 8) | (initial_msg[0]);
+		w[0] = 0x800000 | (initial_msg[1] << 8) | (initial_msg[0]);
 	} else if (initial_len == 3) {
 		w[0] = 0x80000000 | (initial_msg[2] << 16) | (initial_msg[1] << 8) | (initial_msg[0]);
 	} else if (initial_len == 4) {
@@ -190,54 +188,77 @@ void md5(uint8_t initial_msg[8], int initial_len, unsigned int *h0, unsigned int
 
 }
 
-void crack_serial(uint8_t initial_msg[8], int len) {
-	unsigned int ph0, ph1, ph2, ph3;
-	md5(initial_msg, len, &ph0, &ph1, &ph2, &ph3);
+void crack_ispc(uint8_t initial_msg[8], int len) {
+	unsigned int h0, h1, h2, h3, aa, bb, cc;
+	md5(initial_msg, len, &h0, &h1, &h2, &h3);
 
-	uint8_t a,b,c,d;
-
-	for (a = 0; a < 95; a++){
-		for (b = 0; b < 95; b++){
-			for (c = 0; c < 95; c++){
-				for (d = 0; d < 95; d++){
-					uint8_t guess[4] = {a+32,b+32,c+32,d+32};
-					unsigned int h0, h1, h2, h3;
-					md5(guess,len,&h0,&h1,&h2,&h3);
-
-					if ((h0 == ph0) && (h1 == ph1) && (h2 == ph2) && (h3 == ph3)) {
-						cout << "CRACKED " << endl;
+	for (uint8_t a = 32; a < 127; a++){
+		if (len == 2) {
+			aa = 0x800000 | (a << 8);
+			ispc::cracked(len, aa, 0, 0, h0, h1, h2, h3);
+			continue;
+		}
+		for (uint8_t b = 32; b < 127; b++){
+			if (len == 3){
+				aa = 0x80000000 | (a << 16) | (b << 8);
+				ispc::cracked(len, aa, 0, 0, h0, h1, h2, h3);
+				continue;
+			}
+			for (uint8_t c = 32; c < 127; c++){
+				if (len == 4){
+					aa = (a << 24) | (b << 16) | (c << 8);
+					bb = 0x80;
+					ispc::cracked(len, aa, bb, 0, h0, h1, h2, h3);
+					continue;
+				}
+				for (uint8_t d = 32; d < 127; d++){
+					if (len == 5){
+						aa = (a << 24) | (b << 16) | (c << 8);
+						bb = 0x8000 | d;
+						ispc::cracked(len, aa, bb, 0, h0, h1, h2, h3);
+						continue;
+					}
+					for (uint8_t e = 32; e < 127; e++){
+						if (len == 6){
+							aa = (a << 24) | (b << 16) | (c << 8);
+							bb = 0x800000 | (d << 8) | e;
+							ispc::cracked(len, aa, bb, 0, h0, h1, h2, h3);
+							continue;
+						}
+						for (uint8_t f = 32; f < 127; f++){
+							if (len == 7){
+								aa = (a << 24) | (b << 16) | (c << 8);
+								bb = 0x80000000 | (d << 16) | (e << 8) | f;
+								ispc::cracked(len, aa, bb, 0, h0, h1, h2, h3);
+								continue;
+							}
+							for (uint8_t g = 32; g < 127; g++){
+								aa = (a << 24) | (b << 16) | (c << 8);
+								bb = (d << 24) | (e << 16) | (f << 8) << g;
+								cc = 0x80;
+								ispc::cracked(len, aa, bb, cc, h0, h1, h2, h3);
+							}
+						}
 					}
 				}
 			}
 		}
 	}
-}
-
-void crack_ispc(uint8_t initial_msg[8], int len) {
-	unsigned int h0, h1, h2, h3;
-	md5(initial_msg, len, &h0, &h1, &h2, &h3);
-
-	for (uint8_t a = 32; a < 127; a++){
-		for (uint8_t b = 32; b < 127; b++){
-			unsigned int aa = 0x80000000 | (a << 16) | (b << 8);
-			ispc::cracked(len, aa, h0, h1, h2, h3);
-		}
-	}
 
 	uint8_t *p;
 	
-		// display result
+	// display result
 	
-		p=(uint8_t *)&h0;
-		printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+	p=(uint8_t *)&h0;
+	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
 	
-		p=(uint8_t *)&h1;
-		printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+	p=(uint8_t *)&h1;
+	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
 	
-		p=(uint8_t *)&h2;
-		printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+	p=(uint8_t *)&h2;
+	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
 	
-		p=(uint8_t *)&h3;
-		printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
-		puts("");
+	p=(uint8_t *)&h3;
+	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+	puts("");
 }
