@@ -67,30 +67,44 @@ static inline unsigned int to_int32(uint8_t *bytes)
         | ((unsigned int) bytes[3] << 24);
 }
 
-void md5(uint8_t initial_msg[4], unsigned int *h0, unsigned int *h1, unsigned int *h2, unsigned int *h3) {
-
-	uint8_t msg[64];
-	unsigned int w[16];
-
-	// Message (to prepare)
-	int initial_len = 4;
+void md5(uint8_t initial_msg[8], int initial_len, unsigned int *h0, unsigned int *h1, unsigned int *h2, unsigned int *h3) {
 	
-	unsigned int a, b, c, d, i, f, g, temp;
+	unsigned int a, b, c, d, i;
 
-	memset(msg, 0, 64);
+	unsigned int w[16];
+	memset(w, 0, 64);
 
-	msg[0] = initial_msg[0];
-	msg[1] = initial_msg[1];
-	msg[2] = initial_msg[2];
-	msg[3] = initial_msg[3];
-	msg[initial_len] = 0x80; // write the "1" bit
-	msg[56] = 8*initial_len;
+	cout << (int)initial_msg[0] << " " << (int)initial_msg[1] << " " << (int)initial_msg[2] << endl;
+
+	if (initial_len == 2) {
+		a = 0x800000 | (initial_msg[1] << 8) | (initial_msg[0]);
+	} else if (initial_len == 3) {
+		w[0] = 0x80000000 | (initial_msg[2] << 16) | (initial_msg[1] << 8) | (initial_msg[0]);
+	} else if (initial_len == 4) {
+		w[0] = (initial_msg[3] << 24) | (initial_msg[2] << 16) | (initial_msg[1] << 8) | (initial_msg[0]);
+		w[1] = 0x80;
+	} else if (initial_len == 5) {
+		w[0] = (initial_msg[3] << 24) | (initial_msg[2] << 16) | (initial_msg[1] << 8) | (initial_msg[0]);
+		w[1] = 0x8000 | (initial_msg[4]);
+	} else if (initial_len == 6) {
+		w[0] = (initial_msg[3] << 24) | (initial_msg[2] << 16) | (initial_msg[1] << 8) | (initial_msg[0]);
+		w[1] = 0x800000 | (initial_msg[5] << 8) | (initial_msg[4]);
+	} else if (initial_len == 7) {
+		w[0] = (initial_msg[3] << 24) | (initial_msg[2] << 16) | (initial_msg[1] << 8) | (initial_msg[0]);
+		w[1] = 0x80000000 | (initial_msg[6] << 16) | (initial_msg[5] << 8) | (initial_msg[4]);
+	} else if (initial_len == 8) {
+		w[0] = (initial_msg[3] << 24) | (initial_msg[2] << 16) | (initial_msg[1] << 8) | (initial_msg[0]);
+		w[1] = (initial_msg[7] << 24) | (initial_msg[6] << 16) | (initial_msg[5] << 8) | (initial_msg[4]);
+		w[2] = 0x80;
+	}
+
+	w[14] = 8*initial_len;
 
 	for (i = 0; i < 16; i++){
-		w[i] = to_int32(msg + i*4);
 		cout << hex << w[i] << " ";
 	}
 	cout << endl;
+
 
 	// Initialize hash value for this chunk:
 	a = 0x67452301;
@@ -176,20 +190,19 @@ void md5(uint8_t initial_msg[4], unsigned int *h0, unsigned int *h1, unsigned in
 
 }
 
-void crack_serial(uint8_t initial_msg[4]) {
+void crack_serial(uint8_t initial_msg[8], int len) {
 	unsigned int ph0, ph1, ph2, ph3;
-	md5(initial_msg, &ph0, &ph1, &ph2, &ph3);
+	md5(initial_msg, len, &ph0, &ph1, &ph2, &ph3);
 
 	uint8_t a,b,c,d;
 
 	for (a = 0; a < 95; a++){
-		cout << (char)(a+32) << endl;
 		for (b = 0; b < 95; b++){
 			for (c = 0; c < 95; c++){
 				for (d = 0; d < 95; d++){
 					uint8_t guess[4] = {a+32,b+32,c+32,d+32};
 					unsigned int h0, h1, h2, h3;
-					md5(guess,&h0,&h1,&h2,&h3);
+					md5(guess,len,&h0,&h1,&h2,&h3);
 
 					if ((h0 == ph0) && (h1 == ph1) && (h2 == ph2) && (h3 == ph3)) {
 						cout << "CRACKED " << endl;
@@ -200,16 +213,31 @@ void crack_serial(uint8_t initial_msg[4]) {
 	}
 }
 
-void crack_ispc(uint8_t initial_msg[4]) {
+void crack_ispc(uint8_t initial_msg[8], int len) {
 	unsigned int h0, h1, h2, h3;
-	md5(initial_msg, &h0, &h1, &h2, &h3);
+	md5(initial_msg, len, &h0, &h1, &h2, &h3);
 
-	uint8_t a,b,c,d;
-
-	for (a = 0; a < 95; a++){
-		cout << (char)(a+32) << endl;
-		for (b = 0; b < 95; b++){
-			ispc::cracked(a, b, h0, h1, h2, h3);
+	for (uint8_t a = 32; a < 127; a++){
+		for (uint8_t b = 32; b < 127; b++){
+			unsigned int aa = 0x80000000 | (a << 16) | (b << 8);
+			ispc::cracked(len, aa, h0, h1, h2, h3);
 		}
 	}
+
+	uint8_t *p;
+	
+		// display result
+	
+		p=(uint8_t *)&h0;
+		printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+	
+		p=(uint8_t *)&h1;
+		printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+	
+		p=(uint8_t *)&h2;
+		printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+	
+		p=(uint8_t *)&h3;
+		printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+		puts("");
 }

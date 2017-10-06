@@ -43,18 +43,16 @@ static inline unsigned int to_int32(varying unsigned int8 *bytes)
 }
 
 
-export void cracked(uniform unsigned int8 aa, uniform unsigned int8 bb, uniform unsigned int ph0, uniform unsigned int ph1, uniform unsigned int ph2, uniform unsigned int ph3) {
-	foreach(cc = 0 ... 95, dd = 0 ... 95) {
+export void cracked(uniform int initial_len, uniform unsigned int aa, uniform unsigned int bb, uniform unsigned int cc, uniform unsigned int ph0, uniform unsigned int ph1, uniform unsigned int ph2, uniform unsigned int ph3) {
+	foreach(dd = 0 ... 95) {
 		varying unsigned int w[16];
-	
-		uniform int initial_len = 4;
 		
 		uniform unsigned int i, g;
 		varying unsigned int a, b, c, d;
 	
-		w[0] = (aa+32) | ((bb+32) << 8) | ((cc+32) << 16) | ((dd+32) << 24);
-		w[1] = 0x80;
-		w[2] = 0;
+		w[0] = aa | (dd+32);
+		w[1] = bb;
+		w[2] = cc;
 		w[3] = 0;
 		w[4] = 0;
 		w[5] = 0;
