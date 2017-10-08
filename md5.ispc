@@ -149,7 +149,8 @@ void cracked(uniform int initial_len, uniform unsigned int aa, uniform unsigned 
 		d += 0x10325476;
 	
 		if (ph0 == a && ph1 == b && ph2 == c && ph3 == d){
-			print("CRACKED\n");
+			print("");
+			//print("\n");
 		}
 	}
 }
@@ -199,7 +200,7 @@ task void task_recurse_crack(uniform unsigned int start, uniform int length, uni
 export void launch_tasks(uniform int length, uniform unsigned int h0, uniform unsigned int h1, uniform unsigned int h2, uniform unsigned int h3, uniform int tasks){
 	for (uniform unsigned int a = 32; a < 127; a++){
 		launch task_recurse_crack(a, length, h0, h1, h2, h3);
-		if (a % tasks == 0){
+		if ((a-31) % tasks == 0){
 			sync;
 		}
 	}
