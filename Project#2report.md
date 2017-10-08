@@ -47,9 +47,28 @@ The adversary can guess the hash function by looking at the pattern. One way to 
 
 However, the given hash could be hashed from a **salted** password, meaning that extra strings or characters are inserted to password before it gets hashed. One way is to still use brute force to crack and at the end, try to exclude the salts.
 
- 
+#### Dictionary attack vs. Rainbow Table attack 
 
+###### Dictionary attack 
 
+- A guessing attack which uses precompiled list of options
+- Resource requirement
+  - based on knowing key information about a particular target such as family member names, birthday (involved social engineering), or based on patterns seen acorss a large number of users and known passwords.
+  - requires pre-generation of dictionary first
+  - requires more analysis time, as it compares hashes between the given hash and all those in the dictionary entries, so it is basically batch cracking
+
+###### Rainbow Table attack
+
+- A ranbow table is a precomputed table for reversing cryptographic hash functions with hash of a plain-text password up to a certain length consisting of a limited set of characters. It is an example of space/time trade off.
+- Resource requirement
+  - more storage and less computer processing time than brute-force attack.
+  - requires pre-computation of hash chains.
+  - requires less analysis time, as it just compares values in the table with the given hash
+- Cannot crack salted passwords
+
+###### When to use Dictionary attack vs. Rainbow Table attck? 
+
+If the password is salted and the adversary knows the salt, it should use dictionary attack. A rainbow table is generally an offline-only attack. In a brute force attack or dictionary attack, you need to spend time either sending your guess to the real system to running through the algorithm offline. Given a slow hashing or encryption algorithm, this wastes time. Also, the work being done cannot be reused. Therefore, if the adversary would like to reuse a table to break multiple passwords, it is better to use rainbow table to save time. However, if it is one-time, rainbow table attack might wastes time on creating password candidates, and a brute-force/dictionary attack is prefered.
 
 
 
