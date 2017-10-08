@@ -160,10 +160,53 @@ int main() {
 	//sroot(nums, roots, size,4);
 	// printf("num %f",roots[90]);
 	//sravx(nums, roots, size, 4);
-	sravxtasks(nums, roots, size, 4);
+	
+	float starttime = clock();
+	srand(time(0));
+
+	for (int i=0; i<20000000; i++){
+	
+    float r1=rand();
+	float r2=rand();
+	float x=(fmin(r1,r2)/fmax(r1,r2))*8;
+
+	
+	float root=sqrt(x);
+	nums[i]=x;
+	float est=x;
+	while ( fabsf(root-est)>.0001){
+	
+	   est=est-(est*est-x)/(2*est);
+	
+	}
+	roots[i]=est;
+	}
+	float endtime = clock();
+	printf("Last record information: root %f number %f \n ",roots[19999999],nums[19999999]);
+	float elapsedtime = endtime - starttime;
+	printf("Elapsed time with sequential execution: %f seconds \n ",((float) elapsedtime)/CLOCKS_PER_SEC);
+	
+	//call sr function for plain ispc 
+	//call sroot for tasks
+	starttime = clock();
+	sravx(nums,roots, size,4);
+	endtime = clock();
+	printf("Last record information: root %f number %f \n ",roots[19999999],nums[19999999]);
+	elapsedtime = endtime - starttime;
+	printf("Elapsed time with AVX: %f milliseconds \n ",((float) elapsedtime*1000)/CLOCKS_PER_SEC);
+	
+	for (int tsk = 1; tsk<300000; tsk=tsk*2){
+	starttime = clock();
+	sravxtasks(nums, roots, size, tsk);
 	//roots[1999];
 	//nums[1999];
-	printf("roots %f",roots[19999998]);
+	endtime = clock();
+	printf("Last record information: root %f number %f \n ",roots[19999999],nums[19999999]);
+	elapsedtime = endtime - starttime;
+    printf("Elapsed time with AVX and %d task(s): %f milliseconds \n ",tsk,((float) elapsedtime*1000)/CLOCKS_PER_SEC);
+	//printf("task %i", tsk);
+
+	}
     
     return 0;
 }
