@@ -149,7 +149,7 @@ void cracked(uniform int initial_len, uniform unsigned int aa, uniform unsigned 
 		d += 0x10325476;
 	
 		if (ph0 == a && ph1 == b && ph2 == c && ph3 == d){
-			print("CRACKED\n");
+			print("\n");
 		}
 	}
 }

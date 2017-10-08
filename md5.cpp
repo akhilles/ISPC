@@ -212,7 +212,7 @@ void md5(uint8_t initial_msg[8], int initial_len, unsigned int *h0, unsigned int
 	for (i = 0; i < 16; i++){
 		//cout << hex << w[i] << " ";
 	}
-	cout << endl;
+	//cout << endl;
 
 
 	// Initialize hash value for this chunk:

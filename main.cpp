@@ -21,20 +21,15 @@ int main(int argc, char *argv[]) {
 			arr[i] = password[i];
 		}
 	}
-	
-	clock_gettime(CLOCK_MONOTONIC, &start);
-	crack_ispc(arr, len, false, 6);
-	clock_gettime(CLOCK_MONOTONIC, &finish);
-	elapsed = (finish.tv_sec - start.tv_sec);
-	elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-	cout << elapsed << " secs" << endl;
 
-	clock_gettime(CLOCK_MONOTONIC, &start);
-	crack_ispc(arr, len, true, 1);
-	clock_gettime(CLOCK_MONOTONIC, &finish);
-	elapsed = (finish.tv_sec - start.tv_sec);
-	elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-	cout << elapsed << " secs" << endl;
+	for (int tasks = 1; tasks <= 20; tasks++){
+		clock_gettime(CLOCK_MONOTONIC, &start);
+		crack_ispc(arr, len, false, tasks);
+		clock_gettime(CLOCK_MONOTONIC, &finish);
+		elapsed = (finish.tv_sec - start.tv_sec);
+		elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+		cout << "tasks " << tasks << ":\t" << elapsed << " secs";
+	}
 
 	return 0;
 }
