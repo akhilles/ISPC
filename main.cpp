@@ -24,11 +24,13 @@ int main(int argc, char *argv[]) {
 
 	for (int tasks = 1; tasks <= 20; tasks++){
 		clock_gettime(CLOCK_MONOTONIC, &start);
-		crack_ispc(arr, len, false, tasks);
+		for (int iter = 0; iter < 5; iter++){
+			crack_ispc(arr, len, false, tasks);
+		}
 		clock_gettime(CLOCK_MONOTONIC, &finish);
 		elapsed = (finish.tv_sec - start.tv_sec);
 		elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-		cout << "tasks " << tasks << ":\t" << elapsed << " secs";
+		cout << "tasks " << tasks << ":\t" << elapsed << " secs" << endl;
 	}
 
 	return 0;
