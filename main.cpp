@@ -22,19 +22,56 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	
+    // Serial
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    crack_ispc(arr, len, true, 0);
+    clock_gettime(CLOCK_MONOTONIC, &finish);
+    elapsed = (finish.tv_sec - start.tv_sec);
+    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    cout  << " Sequential Implementation.";
+    cout <<"Time elapsed "<< elapsed << " secs" << endl;
+    
+    // ISPC with 0 task
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    crack_ispc(arr, len, false, 0);
+    clock_gettime(CLOCK_MONOTONIC, &finish);
+    elapsed = (finish.tv_sec - start.tv_sec);
+    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    cout << "ISPC implementation with no task.";
+    cout <<"Time elapsed "<< elapsed << " secs" << endl;
+    // ISPC with 1 task
 	clock_gettime(CLOCK_MONOTONIC, &start);
-	crack_ispc(arr, len, false, 6);
+	crack_ispc(arr, len, false, 1);
 	clock_gettime(CLOCK_MONOTONIC, &finish);
 	elapsed = (finish.tv_sec - start.tv_sec);
 	elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    cout << "1" << " tasks are implemented.";
 	cout << elapsed << " secs" << endl;
-
-	clock_gettime(CLOCK_MONOTONIC, &start);
-	crack_ispc(arr, len, true, 1);
-	clock_gettime(CLOCK_MONOTONIC, &finish);
-	elapsed = (finish.tv_sec - start.tv_sec);
-	elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-	cout << elapsed << " secs" << endl;
-
+    
+    // ISPC with 10 tasks
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    crack_ispc(arr, len, false, 10);
+    clock_gettime(CLOCK_MONOTONIC, &finish);
+    elapsed = (finish.tv_sec - start.tv_sec);
+    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    cout << "10" << " tasks are implemented.";
+    cout << elapsed << " secs" << endl;
+    // ISPC with 100 tasks
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    crack_ispc(arr, len, false, 100);
+    clock_gettime(CLOCK_MONOTONIC, &finish);
+    elapsed = (finish.tv_sec - start.tv_sec);
+    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    cout << "100" << " tasks are implemented.";
+    cout << elapsed << " secs" << endl;
+    // ISPC with 1000 task
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    crack_ispc(arr, len, false, 1000);
+    clock_gettime(CLOCK_MONOTONIC, &finish);
+    elapsed = (finish.tv_sec - start.tv_sec);
+    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    cout << "1000" << " tasks are implemented.";
+    cout << elapsed << " secs" << endl;
+    
 	return 0;
 }

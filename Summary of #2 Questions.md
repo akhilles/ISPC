@@ -25,9 +25,9 @@ Instructions: (Those that are not struck out are for the report)
 
 11. Is speedup linear in the number of cores used? In the number of threads used? Please justify why yes or why not.
 
-12. You may also conduct some search on the web and utilize in addition an existing software toolfor password cracking. Does your tool lend itself easily to parallel execution? You are expected to do some research and find one that does. 
+12. You may also conduct some search on the web and utilize in addition an existing software tool for password cracking. Does your tool lend itself easily to parallel execution? You are expected to do some research and find one that does. 
 
-13. Conduct a similar experiment as the one with your own password cracker. Compare the results and discuss them in your report. Note: Also experiment with a number of different password characters and report thedifference in the timing results. All groups in addition to your own imaginary passwords, also use the following to compareagainst all groups and all varying implementations: bv37qi#f. Apply a number of popular hashesand obtain a number of versions of the password. And you take it from there...			
+13. Conduct a similar experiment as the one with your own password cracker. Compare the results and discuss them in your report. Note: Also experiment with a number of different password characters and report thedifference in the timing results. All groups in addition to your own imaginary passwords, also use the following to compare against all groups and all varying implementations: bv37qi#f. Apply a number of popular hash esand obtain a number of versions of the password. And you take it from there...			
 
 
     ​		
