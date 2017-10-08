@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.ispc": "cpp",
+        "chrono": "cpp"
+    }
+}

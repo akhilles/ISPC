@@ -6,4 +6,4 @@
 #include <string.h>
 #include <stdint.h>
 
-void crack_ispc(uint8_t initial_msg[4], int len);
+void crack_ispc(uint8_t initial_msg[4], int len, bool serial, int tasks);

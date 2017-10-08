@@ -1,13 +1,14 @@
 #include <string>
 #include <iostream>
-#include <ctime>
+#include <time.h>
 #include "md5.h"
 #include "md5_ispc.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
-	clock_t start;
+	struct timespec start, finish;
+	double elapsed;
 	uint8_t arr[8];
 
 	string password = argv[1];
@@ -21,13 +22,19 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	
-	//start = clock();
-	//crack_serial(arr, len);
-	//std::cout << "Time: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
-	
-	start = clock();
-	crack_ispc(arr, len);
-	std::cout << "Time: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << std::endl;
+	clock_gettime(CLOCK_MONOTONIC, &start);
+	crack_ispc(arr, len, false, 6);
+	clock_gettime(CLOCK_MONOTONIC, &finish);
+	elapsed = (finish.tv_sec - start.tv_sec);
+	elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+	cout << elapsed << " secs" << endl;
+
+	clock_gettime(CLOCK_MONOTONIC, &start);
+	crack_ispc(arr, len, true, 1);
+	clock_gettime(CLOCK_MONOTONIC, &finish);
+	elapsed = (finish.tv_sec - start.tv_sec);
+	elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+	cout << elapsed << " secs" << endl;
 
 	return 0;
 }

@@ -43,7 +43,7 @@ static inline unsigned int to_int32(varying unsigned int8 *bytes)
 }
 
 
-export void cracked(uniform int initial_len, uniform unsigned int aa, uniform unsigned int bb, uniform unsigned int cc, uniform unsigned int ph0, uniform unsigned int ph1, uniform unsigned int ph2, uniform unsigned int ph3) {
+void cracked(uniform int initial_len, uniform unsigned int aa, uniform unsigned int bb, uniform unsigned int cc, uniform unsigned int ph0, uniform unsigned int ph1, uniform unsigned int ph2, uniform unsigned int ph3) {
 	foreach(dd = 32 ... 127) {
 		varying unsigned int w[16];
 		
@@ -150,6 +150,57 @@ export void cracked(uniform int initial_len, uniform unsigned int aa, uniform un
 	
 		if (ph0 == a && ph1 == b && ph2 == c && ph3 == d){
 			print("CRACKED\n");
+		}
+	}
+}
+
+void recurse_crack(uniform unsigned int vals[8], uniform int length, uniform int depth, uniform unsigned int h0, uniform unsigned int h1, uniform unsigned int h2, uniform unsigned int h3){
+	if (depth == length) {
+		uniform unsigned int aa, bb, cc;
+		aa = bb = cc = 0;
+			
+		if (length == 2){
+			aa = 0x800000 | (vals[0] << 8);
+		} else if (length == 3) {
+			aa = 0x80000000 | (vals[0] << 16) | (vals[1] << 8);
+		} else if (length == 4) {
+			aa = (vals[0] << 24) | (vals[1] << 16) | (vals[2] << 8);
+			bb = 0x80;
+		} else if (length == 5) {
+			aa = (vals[0] << 24) | (vals[1] << 16) | (vals[2] << 8);
+			bb = 0x8000 | vals[3];
+		} else if (length == 6) {
+			aa = (vals[0] << 24) | (vals[1] << 16) | (vals[2] << 8);
+			bb = 0x800000 | (vals[3] << 8) | vals[4];
+		} else if (length == 7) {
+			aa = (vals[0] << 24) | (vals[1] << 16) | (vals[2] << 8);
+			bb = 0x80000000 | (vals[3] << 16) | (vals[4] << 8) | vals[5];
+		} else if (length == 8) {
+			aa = (vals[0] << 24) | (vals[1] << 16) | (vals[2] << 8);
+			bb = (vals[3] << 24) | (vals[4] << 16) | (vals[5] << 8) << vals[6];
+			cc = 0x80;
+		}
+			
+		cracked(length, aa, bb, cc, h0, h1, h2, h3);
+	} else {
+		for (uniform unsigned int a = 32; a < 127; a++){
+			vals[depth-1] = a;
+			recurse_crack(vals, length, depth+1, h0, h1, h2, h3);
+		}
+	}
+}
+
+task void task_recurse_crack(uniform unsigned int start, uniform int length, uniform unsigned int h0, uniform unsigned int h1, uniform unsigned int h2, uniform unsigned int h3){
+	uniform unsigned int vals[8];
+	vals[0] = start;
+	recurse_crack(vals, length, 2, h0, h1, h2, h3);
+}
+
+export void launch_tasks(uniform int length, uniform unsigned int h0, uniform unsigned int h1, uniform unsigned int h2, uniform unsigned int h3, uniform int tasks){
+	for (uniform unsigned int a = 32; a < 127; a++){
+		launch task_recurse_crack(a, length, h0, h1, h2, h3);
+		if (a % tasks == 0){
+			sync;
 		}
 	}
 }
