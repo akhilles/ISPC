@@ -150,18 +150,58 @@ int main() {
 	if (roots == NULL){
 	printf("malloc error");
 	return 0;}
+
+	//Serial implementation to find all roots
+	float starttime = clock();
+	srand(time(0));
+
+	for (int i=0; i<20000000; i++){
+	
+    float r1=rand();
+	float r2=rand();
+	float x=(fmin(r1,r2)/fmax(r1,r2))*8;
+
+	
+	float root=sqrt(x);
+	nums[i]=x;
+	float est=x;
+	while ( abs(root-est)>.0001){
+	
+	   est=est-(est*est-x)/(2*est);
+	
+	}
+	roots[i]=est;
+	}
+	float endtime = clock();
+	printf("roots %f num %f ",roots[19999999],nums[19999999]);
+	float elapsedtime = endtime - starttime;
+	printf("elapsed time with sequential execution: %f seconds \n ",((float) elapsedtime)/CLOCKS_PER_SEC);
+	
 	//call sr function for plain ispc 
 	//call sroot for tasks
+	starttime = clock();
 	sr(nums,roots, size);
+	endtime = clock();
 	printf("roots %f num %f ",roots[19999999],nums[19999999]);
-	sroot(nums, roots, size,4);
+	elapsedtime = endtime - starttime;
+	printf("elapsed time with ISPC: %f seconds \n ",((float) elapsedtime)/CLOCKS_PER_SEC);
+	
+
+	for (int tsk = 1; tsk<15; tsk++){
+	starttime = clock();
+	sroot(nums, roots, size,tsk);
 	// printf("num %f",roots[90]);
 	//sravx(nums, roots, size, 4);
 	//sravxtasks(nums, roots, size, 4);
 	roots[1999];
 	nums[1999];
+	endtime = clock();
 	printf("roots %f num %f ",roots[19999999],nums[19999999]);
-    
+	elapsedtime = endtime - starttime;
+    printf("elapsed time with ISPC and %d task(s): %f seconds \n ",tsk,((float) elapsedtime)/CLOCKS_PER_SEC);
+
+	}
+	
     return 0;
 }
 
