@@ -187,7 +187,7 @@ int main() {
 	printf("elapsed time with ISPC: %f seconds \n ",((float) elapsedtime)/CLOCKS_PER_SEC);
 	
 
-	for (int tsk = 1; tsk<1050000; tsk=tsk*2){
+	for (int tsk = 1; tsk<300000; tsk=tsk*2){
 	starttime = clock();
 	sroot(nums, roots, size,tsk);
 	// printf("num %f",roots[90]);
