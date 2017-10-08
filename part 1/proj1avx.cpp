@@ -4,24 +4,24 @@
 #include <time.h>
 #include <immintrin.h>
 // Include the header file that the ispc compiler generates
-
-#include "proj1ispc.h"
 #include "tasks.h"
 
 void sravx( float * nums,  float * roots,  int size, int tasks){
-float r1[8];
-float r2[8];
+float * r1 = (float *) _mm_malloc(sizeof(float)*8,32);
+float * r2 = (float *) _mm_malloc(sizeof(float)*8,32);
+float  * temp=(float *) _mm_malloc (sizeof(float)*8,32);
 
 float e=8.0f;
 float z=2.0f;
 
-
+srand(time(0));
 __m256 eight=_mm256_broadcast_ss(&e);
 __m256 two=_mm256_broadcast_ss(&z);
 int mod=0;
 if (size%8 != 0){
+	mod =size%8;
 size=size-size%8;
-mod =size%8;
+
 }
 int q;
 for ( q=0; q<size; q+=8){
@@ -33,7 +33,7 @@ __m256 x =_mm256_mul_ps( _mm256_div_ps(_mm256_min_ps(	_mm256_load_ps(r1),_mm256_
 __m256 root=_mm256_sqrt_ps(x);
 __m256 est =x;
 int flag =8;
-float temp[8];
+
 while (flag>0){
 
 est=_mm256_sub_ps(est,_mm256_div_ps(_mm256_sub_ps(_mm256_mul_ps(est,est),x),_mm256_mul_ps(two,est)));
@@ -92,7 +92,7 @@ void TaskFuncX(void *data, int threadIndex, int threadCount,
 {
 					struct data *  dat= (struct data *) data;
 					int chunk = (*dat).size/taskCount;
-					printf("task");
+					
 					if (taskIndex+1< taskCount)
 					{sravx((*dat).nums+taskIndex*chunk, (*dat).roots+taskIndex*chunk, chunk, taskCount);
 					}else{
@@ -116,10 +116,10 @@ void (*fptr)(void *data, int threadIndex, int threadCount,
                     int taskIndex, int taskCount,
                     int taskIndex0, int taskIndex1, int taskIndex2,
                     int taskCount0, int taskCount1, int taskCount2) =TaskFuncX;
-					printf("launch");
+					
 ISPCLaunch(&handel, (void *) fptr, dat, tasks, 1, 1);
 ISPCSync(handel);
-printf("finish");
+
 }
 
 
@@ -146,22 +146,24 @@ int main() {
 	
 	
 	int size=20000000;
-	float * nums=(float *) malloc(sizeof(float)*size);
+	float * nums=(float *) _mm_malloc(sizeof(float)*size,32);
 	if (nums == NULL){
 	printf("malloc error");
 	return 0;}
 	
-	float  * roots=(float *) malloc(sizeof(float)*size);
+	float  * roots=(float *) _mm_malloc(sizeof(float)*size,32);
 	if (roots == NULL){
 	printf("malloc error");
 	return 0;}
+	//float nums[size];
+	//float roots[size];
 	//sroot(nums, roots, size,4);
 	// printf("num %f",roots[90]);
 	//sravx(nums, roots, size, 4);
 	sravxtasks(nums, roots, size, 4);
-	roots[1999];
-	nums[1999];
-	printf("roots %f",roots[19999999]);
+	//roots[1999];
+	//nums[1999];
+	printf("roots %f",roots[19999998]);
     
     return 0;
 }
