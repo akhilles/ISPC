@@ -165,7 +165,7 @@ int main() {
 	float root=sqrt(x);
 	nums[i]=x;
 	float est=x;
-	while ( abs(root-est)>.0001){
+	while ( fabsf(root-est)>.0001){
 	
 	   est=est-(est*est-x)/(2*est);
 	
@@ -173,18 +173,18 @@ int main() {
 	roots[i]=est;
 	}
 	float endtime = clock();
-	printf("roots %f num %f ",roots[19999999],nums[19999999]);
+	printf("Last record information: root %f number %f \n ",roots[19999999],nums[19999999]);
 	float elapsedtime = endtime - starttime;
-	printf("elapsed time with sequential execution: %f seconds \n ",((float) elapsedtime)/CLOCKS_PER_SEC);
+	printf("Elapsed time with sequential execution: %f seconds \n ",((float) elapsedtime)/CLOCKS_PER_SEC);
 	
 	//call sr function for plain ispc 
 	//call sroot for tasks
 	starttime = clock();
 	sr(nums,roots, size);
 	endtime = clock();
-	printf("roots %f num %f ",roots[19999999],nums[19999999]);
+	printf("Last record information: root %f number %f \n ",roots[19999999],nums[19999999]);
 	elapsedtime = endtime - starttime;
-	printf("elapsed time with ISPC: %f seconds \n ",((float) elapsedtime)/CLOCKS_PER_SEC);
+	printf("Elapsed time with ISPC: %f milliseconds \n ",((float) elapsedtime*1000)/CLOCKS_PER_SEC);
 	
 
 	for (int tsk = 1; tsk<300000; tsk=tsk*2){
@@ -196,9 +196,9 @@ int main() {
 	roots[1999];
 	nums[1999];
 	endtime = clock();
-	printf("roots %f num %f ",roots[19999999],nums[19999999]);
+	printf("Last record information: root %f number %f \n ",roots[19999999],nums[19999999]);
 	elapsedtime = endtime - starttime;
-    printf("elapsed time with ISPC and %d task(s): %f milliseconds \n ",tsk,((float) elapsedtime*1000)/CLOCKS_PER_SEC);
+    printf("Elapsed time with ISPC and %d task(s): %f milliseconds \n ",tsk,((float) elapsedtime*1000)/CLOCKS_PER_SEC);
 
 	}
 	
